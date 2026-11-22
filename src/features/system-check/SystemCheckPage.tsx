@@ -11,7 +11,7 @@ const formSchema = z.object({
     .max(80, 'Nội dung thử được nhập tối đa 80 ký tự.'),
 })
 
-const panelClass = 'space-y-4 rounded-3xl border border-[var(--line)] bg-[var(--panel)] p-6 md:p-8'
+const panelClass = 'space-y-4 rounded-[var(--panel-radius)] border border-[var(--line)] bg-[var(--panel)] p-[var(--card-padding)]'
 
 function ApiCheck() {
   const { data, isError, isFetching, refetch } = useQuery(healthQueryOptions)
@@ -56,7 +56,7 @@ function FormCheck() {
           <label htmlFor="sample-text" className="block text-sm font-semibold">Nội dung thử</label>
           <input
             id="sample-text"
-            className="min-h-11 w-full rounded-xl border border-[var(--control-line)] bg-[var(--canvas)] px-3 py-2"
+            className="min-h-[var(--control-height)] w-full rounded-[var(--control-radius)] border border-[var(--control-line)] bg-[var(--panel)] px-3 py-2 aria-[invalid=true]:border-[var(--danger)]"
             aria-invalid={Boolean(errors.sampleText)}
             aria-describedby={errors.sampleText ? 'sample-text-error' : undefined}
             required

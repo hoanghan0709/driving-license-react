@@ -46,7 +46,7 @@ function NotFoundPage() {
   return (
     <>
       <h1 className="text-4xl font-bold">Không tìm thấy trang</h1>
-      <Link to="/" className="mt-6 inline-block font-semibold text-[var(--accent)] underline">
+      <Link className="button-link mt-6" to="/">
         Về trang chủ
       </Link>
     </>
@@ -85,7 +85,7 @@ export default function App() {
           <Route path="exams/:id" element={sessionId !== null && <ExamPage sessionId={sessionId} />} />
         </Route>
         <Route path="system-check" element={
-          <main id="main-content" tabIndex={-1} className="page-width py-14 sm:py-20">
+          <main id="main-content" tabIndex={-1} className="page-width py-[var(--section-space)]">
             <SystemCheckPage />
           </main>
         } />
@@ -93,7 +93,7 @@ export default function App() {
         <Route path="dang-ky" element={<LegacyRoute pathname="/register" />} />
         <Route path="kiem-tra" element={<LegacyRoute pathname="/system-check" />} />
         <Route path="*" element={
-          <main id="main-content" tabIndex={-1} className="page-width py-14 sm:py-20">
+          <main id="main-content" tabIndex={-1} className="page-width py-[var(--section-space)]">
             <NotFoundPage />
           </main>
         } />

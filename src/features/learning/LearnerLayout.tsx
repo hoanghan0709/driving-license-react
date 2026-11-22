@@ -41,5 +41,5 @@ export function Pagination({ page, limit, total, onPage }: {
 }
 
 export function DashboardLink() {
-  return <Link to="/dashboard">Đổi hạng bằng trong bảng điều khiển</Link>
+  return <Link className="button-link" to="/dashboard">Đổi hạng bằng trong bảng điều khiển</Link>
 }

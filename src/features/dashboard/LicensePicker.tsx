@@ -45,7 +45,7 @@ export function LicensePicker({ sessionId, profile }: { sessionId: number; profi
           {save.isPending ? 'Đang lưu…' : 'Lưu hạng bằng'}
         </button>
         {licenses.isPending && <p role="status">Đang tải danh sách hạng bằng…</p>}
-        {licenses.isError && <p role="alert">Chưa tải được hạng bằng. <button type="button" onClick={() => void licenses.refetch()}>Thử tải lại</button></p>}
+        {licenses.isError && <p role="alert">Chưa tải được hạng bằng. <button className="account-outline-button" type="button" onClick={() => void licenses.refetch()}>Thử tải lại</button></p>}
         {save.isError && <p role="alert">Chưa xác nhận được hạng bằng đã lưu. Bạn có thể thử lại.</p>}
         {save.isSuccess && <p role="status">Đã lưu hạng bằng.</p>}
       </form>

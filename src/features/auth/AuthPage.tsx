@@ -120,8 +120,8 @@ export function AuthPage({ mode }: { mode: 'login' | 'register' }) {
           </button>
         </form>
         <p className="account-switch">
-          {creating ? 'Đã có tài khoản?' : 'Chưa có tài khoản?'}{' '}
-          <Link to={creating ? '/login' : '/register'}>{creating ? 'Đăng nhập' : 'Đăng ký'}</Link>
+          <span>{creating ? 'Đã có tài khoản?' : 'Chưa có tài khoản?'}</span>
+          <Link className="button-link" to={creating ? '/login' : '/register'}>{creating ? 'Đăng nhập' : 'Đăng ký'}</Link>
         </p>
       </div>
     </main>

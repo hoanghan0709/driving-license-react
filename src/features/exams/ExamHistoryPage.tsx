@@ -45,7 +45,7 @@ export function ExamHistoryPage({ sessionId }: { sessionId: number }) {
                 <h2>Lượt thi {exam.id} · Hạng {exam.license_type}</h2>
                 <p className="learner-meta">{dates.format(new Date(exam.started_at))} · {statuses[exam.status]}</p>
                 {exam.status !== 'DOING' && <p>{exam.is_passed ? 'Đạt' : 'Không đạt'} · {exam.score} điểm · Điểm đạt {exam.passing_score}</p>}
-                <Link to={`/exams/${exam.id}`}>{exam.status === 'DOING' ? 'Tiếp tục thi' : 'Xem kết quả'}</Link>
+                <Link className="button-link" to={`/exams/${exam.id}`}>{exam.status === 'DOING' ? 'Tiếp tục thi' : 'Xem kết quả'}</Link>
               </li>
             ))}
           </ul>

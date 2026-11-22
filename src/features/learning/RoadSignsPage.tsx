@@ -21,6 +21,7 @@ export function RoadSignsPage({ sessionId }: { sessionId: number }) {
   })
 
   return (
+
     <>
       <h1>Biển báo</h1>
       <DashboardLink />
@@ -38,7 +39,7 @@ export function RoadSignsPage({ sessionId }: { sessionId: number }) {
             {types.data?.data.map((item) => <option key={item.code} value={item.code}>{item.name}</option>)}
           </select>
         </div>
-        <button type="submit">Tìm kiếm</button>
+        <button type="submit" className="learner-primary">Tìm kiếm</button>
       </form>
       {types.isError && <LearnerError message="Chưa tải được nhóm biển." retry={() => void types.refetch()} />}
       {signs.isPending && <p role="status">Đang tải biển báo…</p>}
@@ -46,10 +47,22 @@ export function RoadSignsPage({ sessionId }: { sessionId: number }) {
       {signs.data && (
         <>
           {signs.data.data.length === 0 && <p>Chưa có biển báo phù hợp.</p>}
-          <ul className="learner-list">
+          <ul className="learner-list learner-sign-grid">
             {signs.data.data.map((sign) => (
               <li className="learner-card" key={sign.id}>
-                <h2><Link to={`/road-signs/${sign.id}`}>{sign.code} · {sign.name}</Link></h2>
+                <h2>
+                  <Link to={`/road-signs/${sign.id}`}>
+                    {sign.code} · {sign.name}
+                  </Link>
+                </h2>
+                {sign.image && (
+                  <img
+                    src={mediaUrl(sign.image)}
+                    alt={`${sign.code} - ${sign.name}`}
+                    className="learner-sign-thumbnail"
+                    loading="lazy"
+                  />
+                )}
                 <p className="learner-meta">Hạng {sign.license_type}</p>
                 <p>{sign.meaning}</p>
               </li>
@@ -87,12 +100,14 @@ function RoadSignDetails({ sessionId, id }: { sessionId: number; id: string }) {
 
   return (
     <>
-      <p><Link to="/road-signs">Về danh sách biển báo</Link></p>
+      <p><Link className="button-link" to="/road-signs">Về danh sách biển báo</Link></p>
       <h1>{sign.data.code} · {sign.data.name}</h1>
-      <p className="learner-meta">Hạng {sign.data.license_type}</p>
-      {image && <img className="learner-image" src={image} alt={`Biển ${sign.data.code} · ${sign.data.name}`} />}
-      <p className="learner-content">{sign.data.meaning}</p>
-      {sign.data.description && <p className="learner-content">{sign.data.description}</p>}
+      <div className="learner-card">
+        <p className="learner-meta">Hạng {sign.data.license_type}</p>
+        {image && <img className="learner-image" src={image} alt={`Biển ${sign.data.code} · ${sign.data.name}`} />}
+        <p className="learner-content">{sign.data.meaning}</p>
+        {sign.data.description && <p className="learner-content">{sign.data.description}</p>}
+      </div>
       <h2>Câu hỏi liên quan</h2>
       {questions.isPending && <p role="status">Đang tải câu hỏi…</p>}
       {questions.isError && <LearnerError retry={() => void questions.refetch()} />}

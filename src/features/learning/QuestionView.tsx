@@ -1,10 +1,11 @@
 import { useId } from 'react'
+import type { ReactNode } from 'react'
 import { mediaUrl } from '../../services/learner-api'
 import type { Question } from './learning-api'
 
-export function QuestionView({ question, selected, onSelect, disabled, reveal = false, number }: {
+export function QuestionView({ question, selected, onSelect, disabled, reveal = false, number, children }: {
   question: Question; selected?: number; onSelect?: (id: number) => void
-  disabled?: boolean; reveal?: boolean; number?: number
+  disabled?: boolean; reveal?: boolean; number?: number; children?: ReactNode
 }) {
   const group = useId()
   const image = mediaUrl(question.image)
@@ -16,17 +17,25 @@ export function QuestionView({ question, selected, onSelect, disabled, reveal = 
       {image && <img className="learner-image" src={image} alt="Hình minh họa câu hỏi" />}
       <fieldset className="learner-options" disabled={disabled}>
         <legend>{reveal ? 'Đáp án và lựa chọn' : 'Chọn đáp án'}</legend>
-        {question.answers.map((answer) => (
-          <label className="learner-option" key={answer.id}>
-            {onSelect && <input type="radio" name={group} checked={selected === answer.id} onChange={() => onSelect(answer.id)} />}
-            <span>{answer.label}. {answer.content}
-              {reveal && answer.is_correct && <strong> · Đáp án đúng</strong>}
-              {reveal && selected === answer.id && <strong> · Đã chọn</strong>}
-            </span>
-          </label>
-        ))}
+        {question.answers.map((answer) => {
+          const checked = selected === answer.id
+          const correct = reveal && answer.is_correct === true
+          const incorrect = reveal && checked && answer.is_correct === false
+          const Option = onSelect ? 'label' : 'div'
+          return (
+            <Option className="learner-option" key={answer.id}
+              data-feedback={correct ? 'correct' : incorrect ? 'incorrect' : undefined}>
+              {onSelect && <input type="radio" name={group} checked={checked} onChange={() => onSelect(answer.id)} />}
+              <span>{answer.label}. {answer.content}
+                {correct && <strong> · Đáp án đúng</strong>}
+                {reveal && checked && <strong> · {incorrect ? 'Đã chọn sai' : 'Đã chọn'}</strong>}
+              </span>
+            </Option>
+          )
+        })}
       </fieldset>
       {reveal && question.explanation && <p className="learner-content"><strong>Giải thích</strong><br />{question.explanation}</p>}
+      {children && <div className="learner-question-footer">{children}</div>}
     </article>
   )
 }

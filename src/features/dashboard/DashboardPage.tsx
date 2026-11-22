@@ -88,12 +88,12 @@ export function DashboardPage({ sessionId }: { sessionId: number }) {
             <h2 id="progress-heading">Tiến độ ôn tập</h2>
             <StudyProgress sessionId={sessionId} />
             <nav className="dashboard-links" aria-label="Hoạt động ôn tập">
-              <Link to="/practice">Luyện câu hỏi</Link>
-              <Link to="/practice/wrong">Câu cần ôn lại</Link>
-              <Link to="/road-signs">Biển báo</Link>
-              <Link to="/exams">Thi thử</Link>
-              <Link to="/exams/history">Lịch sử thi</Link>
-              <Link to="/#study-roadmap">Xem lộ trình ôn tập</Link>
+              <Link className="button-link" to="/practice">Luyện câu hỏi</Link>
+              <Link className="button-link" to="/practice/wrong">Câu cần ôn lại</Link>
+              <Link className="button-link" to="/road-signs">Biển báo</Link>
+              <Link className="button-link" to="/exams">Thi thử</Link>
+              <Link className="button-link" to="/exams/history">Lịch sử thi</Link>
+              <Link className="button-link" to="/#study-roadmap">Xem lộ trình ôn tập</Link>
             </nav>
           </section>
           <section aria-labelledby="profile-heading">

@@ -13,8 +13,10 @@ export function ExamCatalogPage({ sessionId }: { sessionId: number }) {
   return (
     <>
       <h1>Thi thử</h1>
-      <DashboardLink />
-      <p><Link to="/exams/history?status=DOING">Tiếp tục lượt thi đang làm</Link></p>
+      <div className="learner-actions">
+        <DashboardLink />
+        <Link className="button-link" to="/exams/history?status=DOING">Tiếp tục lượt thi đang làm</Link>
+      </div>
       <div className="learner-filters">
         <div className="learner-field"><label htmlFor="exam-kind">Loại đề</label>
           <select id="exam-kind" value={kind} onChange={(event) => setKind(event.target.value === 'random' ? 'random' : 'fixed')}>

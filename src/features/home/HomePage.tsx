@@ -4,7 +4,6 @@ import roadHero from './road-hero.webp'
 
 const studySteps = [
   {
-    tone: 'violet',
     title: 'Ôn lý thuyết',
     description: 'Học theo chủ đề để nắm quy tắc, nhận biết biển báo và hiểu tình huống giao thông.',
     tips: [
@@ -14,7 +13,6 @@ const studySteps = [
     icon: 'M12 6v15M3 4h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5v15h-5a4 4 0 0 0-4 2 4 4 0 0 0-4-2H3z',
   },
   {
-    tone: 'cyan',
     title: 'Luyện thi thử',
     description: 'Làm trọn một đề trong thời gian quy định để tập phân bổ thời gian.',
     tips: [
@@ -24,7 +22,6 @@ const studySteps = [
     icon: 'M9 2h6m-3 4V2m6.5 5.5L20 6m-8 5v4h3m5-1a8 8 0 1 1-16 0 8 8 0 0 1 16 0z',
   },
   {
-    tone: 'pink',
     title: 'Ôn lại câu sai',
     description: 'Xem lại những câu đã trả lời sai để biết phần kiến thức nào cần ôn thêm.',
     tips: [
@@ -76,7 +73,7 @@ export function HomePage({ studyPath }: { studyPath: '/login' | '/dashboard' }) 
         <h2 id="roadmap-heading">Lộ trình ôn tập</h2>
         <div className="home-step-grid">
           {studySteps.map((step) => (
-            <details className="home-step" data-tone={step.tone} key={step.title}>
+            <details className="home-step" key={step.title}>
               <summary className="home-step-summary">
                 <span className="home-step-icon" aria-hidden="true">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.55" strokeLinecap="round" strokeLinejoin="round">
