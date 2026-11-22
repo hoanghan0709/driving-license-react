@@ -1,0 +1,14 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "VITE_API_BASE_URL=/backend npm run build",
+  "rewrites": [
+    {
+      "source": "/backend/:path*",
+      "destination": "https://go-backend-ghpi.onrender.com/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
