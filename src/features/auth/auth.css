@@ -1,0 +1,137 @@
+.account-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.85fr);
+  gap: clamp(14px, 2vw, 26px);
+  padding-block: clamp(40px, 8vw, 108px);
+}
+
+.account-intro {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(24px, 5vw, 70px);
+  border: 1px solid #ffffff40;
+  border-radius: 28px;
+  background:
+    radial-gradient(ellipse at 100% 0%, #ff006e82, transparent 60%),
+    radial-gradient(ellipse at 100% 100%, #00f0ff65, transparent 55%),
+    linear-gradient(137deg, #261454, #5d34d0);
+  box-shadow: var(--panel-shadow);
+}
+
+.account-intro h1 {
+  font-size: clamp(2.25rem, 6vw, 5rem);
+  font-weight: 810;
+  line-height: 1.04;
+  letter-spacing: -0.055em;
+  text-wrap: balance;
+}
+
+.account-intro p {
+  margin-top: 20px;
+  color: #fff;
+  font-size: clamp(1rem, 2vw, 1.25rem);
+}
+
+.account-panel {
+  align-content: center;
+  padding: clamp(20px, 4vw, 44px);
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  background: var(--panel);
+  box-shadow: var(--panel-shadow);
+}
+
+.account-form,
+.account-field {
+  display: grid;
+  gap: 18px;
+}
+
+.account-field {
+  gap: 6px;
+}
+
+.account-field label {
+  font-weight: 600;
+}
+
+.account-field input {
+  min-height: 48px;
+  width: 100%;
+  border: 1px solid var(--control-line);
+  border-radius: 12px;
+  background: var(--canvas);
+  padding: 8px 12px;
+}
+
+.account-field input[aria-invalid="true"] {
+  border-color: var(--danger);
+}
+
+.account-error {
+  color: var(--danger);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.account-notice {
+  background: var(--panel-raised);
+  border-left: 3px solid var(--accent);
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 20px;
+}
+
+.account-button,
+.account-outline-button {
+  min-height: 44px;
+  padding: 8px 16px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.account-button {
+  background: var(--action);
+  color: var(--action-ink);
+}
+
+.account-button:hover:enabled {
+  background: var(--action-hover);
+}
+
+.account-button:disabled,
+.account-outline-button:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.account-outline-button {
+  border-color: var(--control-line);
+  background: var(--panel);
+  color: var(--accent);
+}
+
+.account-outline-button:hover:enabled {
+  background: var(--panel-raised);
+}
+
+.account-switch {
+  margin-top: 20px;
+  color: var(--muted);
+}
+
+.account-switch a {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (max-width: 680px) {
+  .account-layout {
+    grid-template-columns: 1fr;
+  }
+}
