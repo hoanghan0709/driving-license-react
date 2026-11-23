@@ -1,0 +1,145 @@
+{
+  "name": "projects/13026606765529135426",
+  "projectId": "13026606765529135426",
+  "title": "Luyện Thi Bằng Lái Online",
+  "deviceType": "MOBILE",
+  "designSystem": "assets/1557ecaf6b0246d9b5cf85dfc1722025",
+  "Last Sync Time": "2026-11-23T03:30:22.445Z",
+  "screens": {
+    "exam": {
+      "id": "34bf58f4f6e945a4a5679b75883e9e4d",
+      "label": "Thi thử sát hạch trực tuyến - Website Desktop",
+      "sourceScreen": "projects/13026606765529135426/screens/34bf58f4f6e945a4a5679b75883e9e4d",
+      "type": "DESIGN",
+      "deviceType": "DESKTOP",
+      "width": 2560,
+      "height": 2430,
+      "canvasPosition": {
+        "x": 2738,
+        "y": 1507,
+        "width": 1280,
+        "height": 1187
+      },
+      "hidden": false,
+      "route": "/exams/:id"
+    },
+    "practice": {
+      "id": "796669728daa4ba4a258f34851d9860f",
+      "label": "Luyện câu hỏi lý thuyết - Website Desktop",
+      "sourceScreen": "projects/13026606765529135426/screens/796669728daa4ba4a258f34851d9860f",
+      "type": "DESIGN",
+      "deviceType": "DESKTOP",
+      "width": 2560,
+      "height": 3746,
+      "canvasPosition": {
+        "x": 4082,
+        "y": 1507,
+        "width": 1280,
+        "height": 1873
+      },
+      "hidden": false,
+      "route": "/practice"
+    },
+    "dashboard": {
+      "id": "282a67d42faa495eb20f66d8c5be1c86",
+      "label": "Bảng điều khiển Ôn thi bằng lái - Website Desktop",
+      "sourceScreen": "projects/13026606765529135426/screens/282a67d42faa495eb20f66d8c5be1c86",
+      "type": "DESIGN",
+      "deviceType": "DESKTOP",
+      "width": 2560,
+      "height": 2716,
+      "canvasPosition": {
+        "x": 1192,
+        "y": 1512,
+        "width": 1416,
+        "height": 1402
+      },
+      "hidden": false,
+      "route": "/dashboard"
+    },
+    "history": {
+      "id": "b7aa99a48dee40c8bb8fd0dd0d8a3551",
+      "label": "Lịch sử thi & Thống kê kết quả - Website Desktop",
+      "sourceScreen": "projects/13026606765529135426/screens/b7aa99a48dee40c8bb8fd0dd0d8a3551",
+      "type": "DESIGN",
+      "deviceType": "DESKTOP",
+      "width": 2560,
+      "height": 3196,
+      "canvasPosition": {
+        "x": 6770,
+        "y": 1507,
+        "width": 1280,
+        "height": 1637
+      },
+      "hidden": false,
+      "route": "/exams/history"
+    },
+    "signs": {
+      "id": "89105f4945414aa58e0fa31e80ee2c6e",
+      "label": "Tra cứu Biển báo giao thông - Website Desktop",
+      "sourceScreen": "projects/13026606765529135426/screens/89105f4945414aa58e0fa31e80ee2c6e",
+      "type": "DESIGN",
+      "deviceType": "DESKTOP",
+      "width": 2560,
+      "height": 3550,
+      "canvasPosition": {
+        "x": 5426,
+        "y": 1507,
+        "width": 1280,
+        "height": 1775
+      },
+      "hidden": false,
+      "route": "/road-signs"
+    },
+    "prototype": {
+      "id": "26aea746fe7f4783bc13fc7cc7a5b865",
+      "label": "Ôn Thi Bằng Lái Xe Dashboard Flow",
+      "sourceScreen": "projects/13026606765529135426/screens/26aea746fe7f4783bc13fc7cc7a5b865",
+      "type": "PROTOTYPE_V2",
+      "deviceType": "MOBILE",
+      "width": 390,
+      "height": 884,
+      "canvasPosition": {
+        "x": 1344,
+        "y": 1587,
+        "width": 390,
+        "height": 884
+      },
+      "hidden": true,
+      "route": null
+    },
+    "dashboard-mobile": {
+      "id": "44ffe3334610423981025fa0c1bd0ff5",
+      "label": "Bảng điều khiển Ôn thi bằng lái - Mobile",
+      "sourceScreen": "projects/13026606765529135426/screens/44ffe3334610423981025fa0c1bd0ff5",
+      "type": "DESIGN",
+      "deviceType": "MOBILE",
+      "width": 780,
+      "height": 2636,
+      "canvasPosition": {
+        "x": 576,
+        "y": null,
+        "width": 390,
+        "height": 1331
+      },
+      "hidden": true,
+      "route": "/dashboard"
+    },
+    "reference": {
+      "id": "18098153865453177187",
+      "label": "image.png",
+      "sourceScreen": "projects/13026606765529135426/screens/18098153865453177187",
+      "type": "IMAGE",
+      "width": 2342,
+      "height": 1520,
+      "canvasPosition": {
+        "x": null,
+        "y": null,
+        "width": 512,
+        "height": 332
+      },
+      "hidden": true,
+      "route": null
+    }
+  }
+}

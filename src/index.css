@@ -197,6 +197,7 @@ select:disabled {
 }
 
 @supports (appearance: base-select) and selector(::picker(select)) {
+
   select,
   select::picker(select) {
     appearance: base-select;

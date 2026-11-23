@@ -1,19 +1,19 @@
 import { Suspense } from 'react'
-import { Link, NavLink, Outlet } from 'react-router'
+import { Link, matchPath, Outlet, useLocation } from 'react-router'
+import { StudyFooter, StudyHeader } from './StudyChrome'
+import './study-theme.css'
 import './learning.css'
 
-export function LearnerLayout() {
+export function LearnerLayout({ sessionId }: Readonly<{ sessionId: number }>) {
+  const { pathname } = useLocation()
   return (
-    <main id="main-content" className="page-width learner" tabIndex={-1}>
-      <nav className="learner-nav" aria-label="Khu vực ôn tập">
-        <NavLink to="/practice" end>Luyện câu hỏi</NavLink>
-        <NavLink to="/practice/wrong">Câu cần ôn lại</NavLink>
-        <NavLink to="/road-signs">Biển báo</NavLink>
-        <NavLink to="/exams" end>Thi thử</NavLink>
-        <NavLink to="/exams/history">Lịch sử thi</NavLink>
-      </nav>
-      <Suspense fallback={<p role="status">Đang tải trang…</p>}><Outlet /></Suspense>
-    </main>
+    <div className="study-app" data-dashboard={Boolean(matchPath('/dashboard', pathname)) || undefined}>
+      <StudyHeader sessionId={sessionId} />
+      <main id="main-content" className="learner" tabIndex={-1}>
+        <Suspense fallback={<p role="status">Đang tải trang…</p>}><Outlet /></Suspense>
+      </main>
+      <StudyFooter />
+    </div>
   )
 }
 
@@ -41,5 +41,5 @@ export function Pagination({ page, limit, total, onPage }: {
 }
 
 export function DashboardLink() {
-  return <Link className="button-link" to="/dashboard">Đổi hạng bằng trong bảng điều khiển</Link>
+  return <Link className="button-link" to="/dashboard">Đổi hạng bằng</Link>
 }

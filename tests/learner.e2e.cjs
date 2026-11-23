@@ -66,18 +66,20 @@ test('study, switch license, resume, submit, and review exams through the Go API
       const computed = getComputedStyle(element)
       return [computed.minHeight, computed.borderTopStyle, computed.textDecorationLine]
     })
-    assert.deepEqual(style, ['46px', 'solid', 'none'])
+    assert.deepEqual(style, ['44px', 'solid', 'none'])
   }
-  await assertButtonLink(page.getByRole('navigation', { name: 'Hoạt động ôn tập' })
-    .getByRole('link', { name: 'Thi thử', exact: true }), '/exams')
+  const activities = page.getByRole('navigation', { name: 'Hoạt động ôn tập' })
+  assert.equal(await activities.getByRole('link', { name: 'Thi thử', exact: true }).getAttribute('href'), '/exams')
+  const mobileNav = page.getByRole('navigation', { name: 'Điều hướng di động' })
+  assert.equal(await mobileNav.getByRole('link', { name: 'Tổng quan' }).getAttribute('aria-current'), 'page')
   const saveLicense = async (code) => {
     await page.getByLabel('Đổi hạng bằng đang ôn').selectOption(code)
     await page.getByRole('button', { name: 'Lưu hạng bằng' }).click()
     await page.getByText('Đã lưu hạng bằng.', { exact: true }).waitFor()
   }
   await saveLicense('A1')
-  await page.getByRole('link', { name: 'Luyện câu hỏi', exact: true }).click()
-  await assertButtonLink(page.getByRole('link', { name: 'Đổi hạng bằng trong bảng điều khiển' }), '/dashboard')
+  await mobileNav.getByRole('link', { name: 'Luyện thi', exact: true }).click()
+  await assertButtonLink(page.getByRole('link', { name: 'Đổi hạng bằng', exact: true }), '/dashboard')
   await page.getByLabel('Chủ đề', { exact: true }).selectOption(String(category.id))
   const navigator = page.getByRole('navigation', { name: 'Danh sách câu hỏi' })
   const questionButton = (number) => navigator.getByRole('button', { name: new RegExp(`^Câu ${number}(?: ·|$)`) })
@@ -94,37 +96,57 @@ test('study, switch license, resume, submit, and review exams through the Go API
   const assertFeedback = async () => {
     const correct = page.getByText(/Đáp án đúng/, { exact: false }).filter({ visible: true })
     const incorrect = page.getByText('Đã chọn sai', { exact: false }).filter({ visible: true })
-    for (const [option, color] of [[correct, 'rgb(22, 112, 68)'], [incorrect, 'rgb(161, 34, 58)']]) {
+    for (const [option, color, fill] of [
+      [correct, 'rgb(22, 112, 68)', 'rgb(229, 245, 237)'],
+      [incorrect, 'rgb(147, 0, 10)', 'rgb(255, 240, 240)'],
+    ]) {
       const style = await option.evaluate((text) => {
         const row = getComputedStyle(text.closest('.learner-option'))
         return [row.borderTopColor, row.backgroundColor]
       })
-      assert.deepEqual(style, [color, 'rgba(0, 0, 0, 0)'])
+      assert.deepEqual(style, [color, fill])
     }
   }
   await assertFeedback()
   await questionButton(2).click()
   await questionButton(1).click()
   await card.getByText('Trả lời sai').waitFor()
-  await page.setViewportSize({ width: 1024, height: 768 })
-  const sidebarBounds = await navigator.boundingBox()
-  const questionBounds = await card.getByRole('article').boundingBox()
-  assert.ok(sidebarBounds.x + sidebarBounds.width < questionBounds.x)
-  await page.setViewportSize({ width: 375, height: 812 })
+  async function assertQuestionLayout(question) {
+    for (const width of [320, 768, 1024]) {
+      await page.setViewportSize({ width, height: 768 })
+      const sidebarBounds = await navigator.boundingBox()
+      const questionBounds = await question.boundingBox()
+      const numberBounds = await questionButton(1).boundingBox()
+      assert.equal(await page.evaluate(() => document.documentElement.scrollWidth), width)
+      assert.ok(numberBounds.width >= 36, `Question numbers are too narrow at ${width}px`)
+      if (width < 900) {
+        assert.ok(questionBounds.y + questionBounds.height < sidebarBounds.y)
+      } else {
+        assert.ok(questionBounds.x + questionBounds.width < sidebarBounds.x)
+      }
+    }
+    await page.setViewportSize({ width: 375, height: 812 })
+  }
+
+  await assertQuestionLayout(card.getByRole('article'))
 
   await page.getByRole('link', { name: 'Câu cần ôn lại', exact: true }).click()
   await page.getByRole('heading', { name: new RegExp(title) }).waitFor()
-  await page.getByRole('link', { name: 'Biển báo', exact: true }).click()
+  await mobileNav.getByRole('link', { name: 'Biển báo', exact: true }).click()
   await page.getByLabel('Tên hoặc mã biển').fill(sign.code)
   await page.getByRole('button', { name: 'Tìm kiếm' }).click()
-  await page.getByRole('link', { name: new RegExp(sign.code) }).click()
+  const bookmark = page.getByRole('button', { name: `Lưu biển ${sign.code}`, exact: true })
+  await bookmark.click()
+  await page.getByRole('button', { name: 'Đã lưu (1)', exact: true }).click()
+  await page.getByRole('link', { name: `${sign.code} · ${sign.name}`, exact: true }).click()
   await page.getByRole('heading', { name: 'Câu hỏi liên quan' }).waitFor()
   await page.getByRole('heading', { name: new RegExp(title) }).waitFor()
   await assertButtonLink(page.getByRole('link', { name: 'Về danh sách biển báo' }), '/road-signs')
 
-  await page.getByRole('link', { name: 'Thi thử', exact: true }).click()
+  await mobileNav.getByRole('link', { name: 'Thi thử', exact: true }).click()
   await page.getByRole('listitem').filter({ hasText: fixed }).getByRole('button', { name: 'Bắt đầu thi' }).click()
   await page.waitForURL(/\/exams\/\d+$/)
+  const attemptId = page.url().split('/').at(-1)
   const submit = page.getByRole('button', { name: 'Nộp bài', exact: true })
   const questionPanel = page.getByRole('complementary').filter({ has: navigator })
   const historyLink = page.getByRole('link', { name: 'Về lịch sử thi', exact: true })
@@ -133,8 +155,9 @@ test('study, switch license, resume, submit, and review exams through the Go API
   assert.equal(await submit.evaluate((button) =>
     Boolean(button.closest('aside').querySelector('nav').compareDocumentPosition(button) & Node.DOCUMENT_POSITION_FOLLOWING)), true)
   await assertButtonLink(historyLink, '/exams/history')
+  await assertQuestionLayout(page.getByRole('article'))
   await page.setViewportSize({ width: 1024, height: 600 })
-  assert.equal(await questionPanel.evaluate((panel) => getComputedStyle(panel).position), 'sticky')
+  assert.equal(await questionPanel.evaluate((panel) => getComputedStyle(panel.parentElement).position), 'sticky')
   await page.setViewportSize({ width: 375, height: 812 })
   await page.route('**/backend/api/v1/exams/*/answers/*', (route) => route.fulfill({ status: 503 }), { times: 1 })
   await page.getByRole('radio', { name: /Phương án đúng/ }).click()
@@ -154,6 +177,8 @@ test('study, switch license, resume, submit, and review exams through the Go API
   await questionButton(2).click()
   assert.equal(await questionButton(2).getAttribute('aria-current'), 'true')
   await page.getByRole('heading', { name: new RegExp(secondTitle) }).waitFor()
+  await page.getByRole('button', { name: 'Đánh dấu xem lại', exact: true }).click()
+  assert.equal(await questionButton(2).getAttribute('data-marked'), 'true')
   await page.getByRole('radio', { name: /Phương án sai/ }).click()
   await page.getByText('Đã lưu 2/2 câu').waitFor()
   assert.equal(await page.getByText('Đáp án đúng', { exact: false }).count(), 0)
@@ -182,26 +207,30 @@ test('study, switch license, resume, submit, and review exams through the Go API
   await assertFeedback()
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth), 375)
 
+  await mobileNav.getByRole('link', { name: 'Luyện thi', exact: true }).click()
   await page.getByRole('link', { name: 'Câu cần ôn lại', exact: true }).click()
   await page.getByRole('heading', { name: new RegExp(secondTitle) }).waitFor()
   assert.equal(await page.getByRole('heading', { name: new RegExp(title) }).count(), 0)
 
-  await page.getByRole('link', { name: 'Thi thử', exact: true }).click()
+  await mobileNav.getByRole('link', { name: 'Thi thử', exact: true }).click()
   await page.getByLabel('Loại đề').selectOption('random')
   await page.getByRole('listitem').filter({ hasText: random }).getByRole('button', { name: 'Bắt đầu thi' }).click()
   await page.waitForURL(/\/exams\/\d+$/)
   const randomUrl = page.url()
-  await page.getByRole('link', { name: 'Lịch sử thi', exact: true }).click()
+  await mobileNav.getByRole('link', { name: 'Lịch sử', exact: true }).click()
   await page.getByLabel('Trạng thái').selectOption('DOING')
   await page.getByRole('link', { name: 'Tiếp tục thi', exact: true }).click()
   await page.waitForURL(randomUrl)
 
-  await page.getByRole('link', { name: 'Bảng điều khiển' }).click()
+  await mobileNav.getByRole('link', { name: 'Tổng quan' }).click()
   await saveLicense('B')
-  await page.getByRole('link', { name: 'Luyện câu hỏi', exact: true }).click()
+  await mobileNav.getByRole('link', { name: 'Luyện thi', exact: true }).click()
   await page.getByText('Chưa có câu hỏi trong phạm vi này.').waitFor()
-  await page.getByRole('link', { name: 'Lịch sử thi', exact: true }).click()
-  await page.getByRole('link', { name: 'Xem kết quả', exact: true }).click()
+  await mobileNav.getByRole('link', { name: 'Lịch sử', exact: true }).click()
+  await page.getByLabel('Tìm theo mã lượt thi').fill(attemptId)
+  await page.getByRole('button', { name: 'Tìm', exact: true }).click()
+  await page.getByLabel('Khoảng thời gian').selectOption('30')
+  await page.getByRole('row').filter({ hasText: '#' + attemptId }).getByRole('link', { name: 'Xem kết quả', exact: true }).click()
   await page.getByRole('heading', { name: 'Kết quả · Đạt' }).waitFor()
   assert.deepEqual(errors, [])
 })
@@ -217,7 +246,10 @@ test('an administrator can open and use the embedded Go admin UI through the web
     await page.getByRole('button', { name: /^Đăng nhập/ }).click()
   }
   await login()
-  await page.getByRole('link', { name: 'Mở trang quản trị' }).click()
+  const adminLink = page.getByRole('link', { name: 'Mở trang quản trị' })
+  await adminLink.waitFor()
+  assert.ok(await adminLink.evaluate((link) => link.classList.contains('button-link')))
+  await adminLink.click()
   await page.waitForURL('**/backend/admin/')
   await page.getByRole('heading', { name: 'Đăng nhập quản trị' }).waitFor()
   await login()

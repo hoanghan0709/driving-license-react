@@ -1,0 +1,81 @@
+.study-sign-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 24px;
+  padding: clamp(22px, 4vw, 54px);
+  border-radius: var(--panel-radius);
+  background: linear-gradient(110deg, var(--accent), var(--tip-start));
+  color: var(--action-ink);
+}
+
+.study-sign-hero .study-icon-tile { color: inherit; background: rgb(255 255 255 / 18%); }
+.study-sign-hero p { max-width: 55ch; }
+
+.study-sign-tools {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.study-sign-filters { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+.study-sign-tools > .learner-meta { margin: 0; text-align: end; }
+
+.study-sign-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 3.2fr) minmax(205px, 1fr);
+  gap: clamp(14px, 2vw, 24px);
+  align-items: start;
+}
+.study-app .learner-sign-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 0; }
+.study-sign-card { display: flex; flex-direction: column; align-items: stretch; padding: clamp(11px, 1.4vw, 20px); }
+.study-sign-card-head,
+.study-saved-signs li { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.study-sign-card-head { min-height: 44px; }
+
+.study-app .study-sign-card-head .study-icon-button { border-color: transparent; }
+.study-sign-card-head svg { width: 16px; }
+
+.study-app .learner .study-sign-image-link {
+  display: grid;
+  place-items: center;
+  min-height: 142px;
+  margin-block: 8px 12px;
+  border-radius: 9px;
+  background: var(--panel-raised);
+}
+
+.study-app .learner-sign-thumbnail { height: 108px; margin: 8px; border: 0; padding: 0; }
+
+.study-sign-title > span {
+  color: var(--accent);
+  font-weight: 750;
+}
+
+.study-app .learner .study-sign-title a { color: var(--ink); text-decoration: none; }
+.study-app .learner .study-sign-title a:hover { text-decoration: underline; }
+.study-app .learner .study-sign-card p { margin-bottom: 12px; font-size: .88rem; color: var(--muted); }
+.study-sign-card > .button-link { margin-top: auto; gap: 6px; }
+.study-sign-card > .button-link svg { width: 15px; flex: none; }
+.study-sign-guide h2 { margin-top: 10px; }
+.study-sign-guide li button { width: 100%; margin-top: 6px; text-align: start; }
+.study-saved-signs li { padding-block: 8px; border-top: 1px solid var(--line); }
+
+@media (max-width: 1100px) {
+  .study-app .learner-sign-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 900px) {
+  .study-sign-layout { grid-template-columns: minmax(0, 1fr); }
+  .study-app .learner-sign-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 680px) {
+  .study-app .learner-sign-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 430px) {
+  .study-sign-hero .study-icon-tile { display: none; }
+  .study-app .learner-sign-grid { grid-template-columns: minmax(0, 1fr); }
+}

@@ -21,6 +21,10 @@ export const historySchema = z.object({
   license_type: z.string(),
   status: z.enum(['DOING', 'COMPLETED', 'TIMEOUT']),
   started_at: dateSchema,
+  finished_at: dateSchema.nullish(),
+  test_id: idSchema.nullish(),
+  template_id: idSchema.optional(),
+  failure_reason: z.string().optional(),
   score: countSchema,
   passing_score: countSchema,
   is_passed: z.boolean(),
@@ -31,7 +35,6 @@ const examSchema = historySchema.omit({ license_type: true }).extend({
   server_time: dateSchema,
   total_questions: countSchema,
   correct_answers: countSchema,
-  failure_reason: z.string().optional(),
   exam: z.object({
     name: z.string(),
     license_type: z.string(),

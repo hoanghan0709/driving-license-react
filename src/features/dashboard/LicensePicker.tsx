@@ -49,7 +49,7 @@ export function LicensePicker({ sessionId, profile }: { sessionId: number; profi
         {save.isError && <p role="alert">Chưa xác nhận được hạng bằng đã lưu. Bạn có thể thử lại.</p>}
         {save.isSuccess && <p role="status">Đã lưu hạng bằng.</p>}
       </form>
-      {profile.role === 'admin' && <a className="dashboard-roadmap" href={adminHref}>Mở trang quản trị</a>}
+      {profile.role === 'admin' && <a className="button-link dashboard-roadmap" href={adminHref}>Mở trang quản trị</a>}
     </>
   )
 }
