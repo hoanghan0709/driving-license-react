@@ -5,6 +5,7 @@ import { learnerRequest, pageSchema } from '../../services/learner-api'
 import { httpStatus } from '../auth/auth-api'
 import { DashboardLink, LearnerError, Pagination } from '../learning/LearnerLayout'
 import { requestExam, templateSchema, testSchema } from './exams-api'
+import './exams.css'
 
 type ExamKind = 'fixed' | 'random'
 
@@ -12,11 +13,10 @@ export function ExamCatalogPage({ sessionId }: { sessionId: number }) {
   const [kind, setKind] = useState<ExamKind>('fixed')
   return (
     <>
-      <h1>Thi thử</h1>
-      <div className="learner-actions">
-        <DashboardLink />
+      <header className="study-page-heading">
+        <div><h1>Thi thử</h1><p>Chọn đề có sẵn hoặc tạo lượt thi ngẫu nhiên theo cấu hình.</p></div>
         <Link className="button-link" to="/exams/history?status=DOING">Tiếp tục lượt thi đang làm</Link>
-      </div>
+      </header>
       <div className="learner-filters">
         <div className="learner-field"><label htmlFor="exam-kind">Loại đề</label>
           <select id="exam-kind" value={kind} onChange={(event) => setKind(event.target.value === 'random' ? 'random' : 'fixed')}>
@@ -24,6 +24,7 @@ export function ExamCatalogPage({ sessionId }: { sessionId: number }) {
             <option value="random">Đề ngẫu nhiên</option>
           </select>
         </div>
+        <DashboardLink />
       </div>
       <ExamChoices key={kind} sessionId={sessionId} kind={kind} />
     </>
@@ -72,7 +73,7 @@ function ExamChoices({ sessionId, kind }: { sessionId: number; kind: ExamKind })
       {results && (
         <>
           {results.data.length === 0 && <p>Chưa có {random ? 'cấu hình đề ngẫu nhiên' : 'đề thi'} được xuất bản trong phạm vi này.</p>}
-          <ul className="learner-list">
+          <ul className="learner-list study-exam-catalog">
             {results.data.map((item) => (
               <li className="learner-card" key={item.id}>
                 <h2>{item.name}</h2>

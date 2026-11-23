@@ -1,12 +1,12 @@
-import { lazy } from 'react'
-import { Link, Navigate, NavLink, Route, Routes, useLocation } from 'react-router'
+import { lazy, Suspense } from 'react'
+import { Link, matchPath, Navigate, NavLink, Route, Routes, useLocation } from 'react-router'
 import { AuthPage } from './features/auth/AuthPage'
 import { useSessionId } from './features/auth/auth-session'
-import { DashboardPage } from './features/dashboard/DashboardPage'
-import { LearnerLayout } from './features/learning/LearnerLayout'
 import { HomePage } from './features/home/HomePage'
 import { SystemCheckPage } from './features/system-check/SystemCheckPage'
 
+const DashboardPage = lazy(() => import('./features/dashboard/DashboardPage').then((module) => ({ default: module.DashboardPage })))
+const LearnerLayout = lazy(() => import('./features/learning/LearnerLayout').then((module) => ({ default: module.LearnerLayout })))
 const PracticePage = lazy(() => import('./features/learning/PracticePage').then((module) => ({ default: module.PracticePage })))
 const RoadSignsPage = lazy(() => import('./features/learning/RoadSignsPage').then((module) => ({ default: module.RoadSignsPage })))
 const RoadSignPage = lazy(() => import('./features/learning/RoadSignsPage').then((module) => ({ default: module.RoadSignPage })))
@@ -60,10 +60,13 @@ function LegacyRoute({ pathname }: { pathname: string }) {
 
 export default function App() {
   const sessionId = useSessionId()
+  const { pathname } = useLocation()
+  const studyRoute = ['/dashboard', '/practice', '/practice/wrong', '/road-signs', '/road-signs/:id', '/exams', '/exams/history', '/exams/:id']
+    .some((pattern) => matchPath(pattern, pathname))
 
   return (
     <>
-      <SiteHeader signedIn={sessionId !== null} />
+      {!(sessionId !== null && studyRoute) && <SiteHeader signedIn={sessionId !== null} />}
       <Routes>
         <Route index element={<HomePage studyPath={sessionId === null ? '/login' : '/dashboard'} />} />
         <Route path="login" element={
@@ -72,10 +75,12 @@ export default function App() {
         <Route path="register" element={
           sessionId === null ? <AuthPage key="register" mode="register" /> : <Navigate to="/dashboard" replace />
         } />
-        <Route path="dashboard" element={
-          sessionId === null ? <Navigate to="/login" replace /> : <DashboardPage sessionId={sessionId} />
-        } />
-        <Route element={sessionId === null ? <Navigate to="/login" replace /> : <LearnerLayout key={sessionId} />}>
+        <Route element={sessionId === null
+          ? <Navigate to="/login" replace />
+          : <Suspense fallback={<main id="main-content" className="page-width py-6" role="status">Đang tải khu vực ôn tập…</main>}>
+            <LearnerLayout key={sessionId} sessionId={sessionId} />
+          </Suspense>}>
+          <Route path="dashboard" element={sessionId !== null && <DashboardPage sessionId={sessionId} />} />
           <Route path="practice" element={sessionId !== null && <PracticePage key="all" sessionId={sessionId} />} />
           <Route path="practice/wrong" element={sessionId !== null && <PracticePage key="wrong" sessionId={sessionId} wrong />} />
           <Route path="road-signs" element={sessionId !== null && <RoadSignsPage sessionId={sessionId} />} />

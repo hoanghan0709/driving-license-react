@@ -1,0 +1,13 @@
+.study-topic-progress h2 {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.study-topic-progress h2 svg { color: var(--accent); }
+.study-topic-progress li { display: grid; gap: 6px; margin-top: 14px; }
+.study-topic-progress li > div { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 5px 10px; }
+.study-topic-progress li > div:first-child { font-size: .87rem; }
+.study-topic-progress li > div:first-child strong:last-child { color: var(--success); }
+.study-topic-progress .study-meter { accent-color: var(--success); }

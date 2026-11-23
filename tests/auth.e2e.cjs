@@ -68,15 +68,15 @@ test('register, sign in, restore the dashboard and sign out', async (t) => {
     page.getByRole('button', { name: 'Đăng nhập', exact: true }).click(),
   ])
   await page.waitForURL('**/dashboard')
-  await waitForText(`Chào ${name}!`)
+  await waitForText(`Chào mừng trở lại, ${name}!`)
   await waitForText(email)
   await waitForText('Tất cả hạng bằng lái')
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth), 375)
 
-  await page.getByRole('link', { name: 'Trang chủ', exact: true }).click()
+  await page.getByRole('link', { name: 'Trang chủ Ôn thi bằng lái', exact: true }).click()
   await page.getByRole('link', { name: 'Bắt đầu ôn tập', exact: true }).click()
   await page.waitForURL(`${baseUrl}/dashboard`)
-  await waitForText(`Chào ${name}!`)
+  await waitForText(`Chào mừng trở lại, ${name}!`)
 
   await page.route('**/backend/api/v1/progress', (route) => route.fulfill({ status: 503 }), { times: 1 })
   await Promise.all([waitForResponse('/backend/auth/refresh', 200), page.reload()])
@@ -97,7 +97,7 @@ test('register, sign in, restore the dashboard and sign out', async (t) => {
   await fillCredentials(password)
   await page.getByRole('button', { name: 'Đăng nhập', exact: true }).click()
   await page.waitForURL('**/dashboard')
-  await waitForText(`Chào ${name}!`)
+  await waitForText(`Chào mừng trở lại, ${name}!`)
   await page.route('**/backend/auth/refresh', (route) => route.fulfill({ status: 401 }))
   await page.reload()
   await page.waitForURL('**/login')

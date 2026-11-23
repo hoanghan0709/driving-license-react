@@ -1,12 +1,15 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router'
+import { StudyIcon } from '../../components/StudyIcon'
 import { httpStatus } from '../auth/auth-api'
 import { LearnerError } from '../learning/LearnerLayout'
 import { QuestionNavigator } from '../learning/QuestionNavigator'
 import { QuestionView } from '../learning/QuestionView'
 import { requestExam } from './exams-api'
 import type { ExamView } from './exams-api'
+import { useExamShortcuts } from './useExamShortcuts'
+import './exams.css'
 
 const reasons: Record<string, string> = {
   critical_question: 'Sai hoặc bỏ trống câu điểm liệt.',
@@ -66,12 +69,13 @@ function ExamAttempt({ sessionId, id }: { sessionId: number; id: string }) {
       {!exam.data && exam.isError && <LearnerError message="Chưa tải được lượt thi của bạn." retry={() => void sync()} />}
       {exam.data && (
         <>
-          <h1>{exam.data.exam.name}</h1>
-          <p className="learner-meta">Hạng {exam.data.exam.license_type} · Phiên bản {exam.data.exam.version}</p>
           {exam.data.status === 'DOING'
             ? <ActiveExam exam={exam.data} onUpdate={update.mutate} saving={update.isPending}
               saveError={update.isError} syncing={exam.isFetching} syncError={exam.isError} onSync={sync} />
-            : <ExamResult exam={exam.data} />}
+            : <>
+              <h1>{exam.data.exam.name}</h1>
+              <ExamResult exam={exam.data} />
+            </>}
         </>
       )}
     </>
@@ -84,6 +88,7 @@ function ActiveExam({ exam, onUpdate, saving, saveError, syncing, syncError, onS
 }) {
   const [now, setNow] = useState(() => performance.now())
   const [activeId, setActiveId] = useState<number>()
+  const [marked, setMarked] = useState<ReadonlySet<number>>(() => new Set())
   const submitDialog = useRef<HTMLDialogElement>(null)
   const questions = exam.exam.questions
   const index = Math.max(0, questions.findIndex((item) => item.id === activeId))
@@ -91,7 +96,15 @@ function ActiveExam({ exam, onUpdate, saving, saveError, syncing, syncError, onS
   const answered = questions.filter((item) => item.selected_answer_id !== undefined).length
   const seconds = Math.max(0, Math.ceil((exam.deadline - now) / 1000))
   const expired = seconds === 0
-  const blocked = saving || syncing || expired
+  const blocked = saving || syncing || expired || saveError || syncError
+  const previous = questions[index - 1]?.id
+  const next = questions[index + 1]?.id
+  useExamShortcuts({
+    question, previous, next, blocked,
+    dialogOpen: () => Boolean(submitDialog.current?.open),
+    selectQuestion: setActiveId,
+    selectAnswer: (question, answer) => onUpdate({ question, answer }),
+  })
   const time = `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`
 
   useEffect(() => {
@@ -111,35 +124,66 @@ function ActiveExam({ exam, onUpdate, saving, saveError, syncing, syncError, onS
 
   return (
     <>
-      <div className="learner-exam-status">
-        <span>Thời gian còn lại <time className="learner-time" dateTime={`PT${seconds}S`}>{time}</time></span>
-        <span role="status">Đã lưu {answered}/{exam.total_questions} câu</span>
-      </div>
+      <header className="learner-card study-exam-heading">
+        <span className="study-icon-tile"><StudyIcon name="clipboard" /></span>
+        <div className="study-exam-title">
+          <span className="study-chip">Hạng {exam.exam.license_type}</span>
+          {exam.exam.version && <span className="study-exam-version">Phiên bản {exam.exam.version}</span>}
+          <h1>{exam.exam.name}</h1>
+        </div>
+        <div className="study-exam-progress">
+          <small>Tiến độ bài thi</small><strong role="status">Đã lưu {answered}/{exam.total_questions} câu</strong>
+        </div>
+        <div className="study-exam-timer">
+          <StudyIcon name="clock" />
+          <div><small>Thời gian còn lại</small><time className="learner-time" dateTime={`PT${seconds}S`}>{time}</time></div>
+        </div>
+      </header>
       {expired && <p role="status">Đang xác nhận trạng thái hết giờ với máy chủ.</p>}
       {syncError && <LearnerError message="Chưa đồng bộ được trạng thái lượt thi." retry={() => void onSync()} />}
       {saveError && <LearnerError message="Chưa xác nhận được thay đổi. Hãy đồng bộ để xem dữ liệu đã lưu." retry={() => void onSync()} />}
       {question && (
-        <div className="learner-question-layout">
-          <QuestionNavigator items={questions.map((item, position) => ({
-            id: item.id, number: position + 1, answered: item.selected_answer_id !== undefined,
-          }))} activeId={question.id} onSelect={setActiveId}>
-            <div className="learner-question-footer learner-exam-submit">
-              <button type="button" className="learner-primary" disabled={blocked || saveError || syncError}
-                onClick={() => submitDialog.current?.showModal()}>Nộp bài</button>
-            </div>
-          </QuestionNavigator>
-          <div>
+        <div className="learner-question-layout study-active-exam">
+          <div className="study-exam-question">
             <QuestionView question={question} number={index + 1} selected={question.selected_answer_id}
               disabled={blocked} onSelect={(answer) => onUpdate({ question: question.id, answer })}>
               <button type="button" disabled={blocked || question.selected_answer_id === undefined}
                 onClick={() => onUpdate({ question: question.id, answer: 0 })}>Bỏ chọn đáp án</button>
+              <div className="learner-actions study-question-actions">
+                <button type="button" disabled={previous === undefined} onClick={() => setActiveId(previous)}>Câu trước</button>
+                <button type="button" className="study-mark-button" aria-pressed={marked.has(question.id)}
+                  onClick={() => setMarked((current) => {
+                    const updated = new Set(current)
+                    if (updated.has(question.id)) updated.delete(question.id)
+                    else updated.add(question.id)
+                    return updated
+                  })}>
+                  <StudyIcon name="flag" /> {marked.has(question.id) ? 'Đã đánh dấu xem lại' : 'Đánh dấu xem lại'}
+                </button>
+                <button type="button" className="learner-primary" disabled={next === undefined} onClick={() => setActiveId(next)}>Câu sau</button>
+              </div>
             </QuestionView>
-
-            <div className="learner-actions">
-              <button type="button" disabled={index === 0} onClick={() => setActiveId(questions[index - 1].id)}>Câu trước</button>
-              <button type="button" disabled={index >= questions.length - 1} onClick={() => setActiveId(questions[index + 1].id)}>Câu sau</button>
-            </div>
+            <p className="study-exam-shortcuts">Phím tắt khi con trỏ ở ngoài biểu mẫu: phím số để chọn đáp án, phím mũi tên để chuyển câu.</p>
             {saving && <p role="status">Đang gửi thay đổi…</p>}
+          </div>
+          <div className="study-exam-sidebar">
+            <QuestionNavigator items={questions.map((item, position) => ({
+              id: item.id, number: position + 1, answered: item.selected_answer_id !== undefined, marked: marked.has(item.id),
+            }))} activeId={question.id} onSelect={setActiveId}>
+              <ul className="study-question-legend">
+                <li>Đã trả lời ({answered})</li><li>Chưa làm ({exam.total_questions - answered})</li>
+                <li>Đang xem (câu {index + 1})</li><li>Đánh dấu ({marked.size})</li>
+              </ul>
+              <div className="learner-question-footer learner-exam-submit">
+                <button type="button" className="learner-primary" disabled={blocked}
+                  onClick={() => submitDialog.current?.showModal()}>Nộp bài</button>
+              </div>
+            </QuestionNavigator>
+            <section className="learner-card study-exam-rules">
+              <h2>Thông tin bài thi</h2>
+              <p>Tổng số câu <strong>{exam.total_questions}</strong></p>
+              <p>Điểm đạt <strong>{exam.passing_score}</strong></p>
+            </section>
           </div>
         </div>
       )}
@@ -178,28 +222,26 @@ function ExamResult({ exam }: { exam: ExamView }) {
       <div className="learner-actions">
 
         <button type="button" aria-pressed={wrongOnly} onClick={() => setWrongOnly(!wrongOnly)}>Chỉ xem câu sai hoặc bỏ trống</button>
-        <p style={{ textAlign: 'center' }}
-          className="examplePage"
+        {active && <p
+          className="study-result-feedback"
           data-result={
             active.question.selected_answer_id === undefined
               ? 'blank'
               : active.question.is_correct ? 'correct' : 'incorrect'
           }
         >
-          <strong style={{ margin: '0 8px' }}>BẠN ĐÃ:</strong>
+          <strong>Bạn đã </strong>
           <strong>
             {active.question.selected_answer_id === undefined
               ? 'Bỏ trống'
               : active.question.is_correct ? 'Đúng'.toUpperCase() : 'Sai'.toUpperCase()}
           </strong>
-        </p>
+        </p>}
       </div>
       {active ? (
-
         <div className="learner-question-layout">
+          <QuestionView question={active.question} number={active.number} selected={active.question.selected_answer_id} reveal />
           <QuestionNavigator items={items} activeId={active.id} onSelect={setActiveId} />
-          <QuestionView question={active.question} number={active.number} selected={active.question.selected_answer_id} reveal>
-          </QuestionView>
         </div>
       ) : wrongOnly && <p>Không có câu sai hoặc bỏ trống.</p>}
     </>
